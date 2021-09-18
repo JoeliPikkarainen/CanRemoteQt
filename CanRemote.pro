@@ -9,17 +9,21 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    bt_com_if.cpp \
-    btcontrolwidget.cpp \
-    logterminal.cpp \
+    com_frame.cpp \
     main.cpp \
-    corewidget.cpp
+    corewidget.cpp \
+    src/bt_com_if.cpp \
+    src/frameconverter.cpp \
+    src/graphics/btcontrolwidget.cpp \
+    src/graphics/logterminal.cpp
 
 HEADERS += \
-    bt_com_if.h \
-    btcontrolwidget.h \
+    com_frame.h \
     corewidget.h \
-    logterminal.h
+    src/bt_com_if.h \
+    src/frameconverter.h \
+    src/graphics/logterminal.h \
+    src/graphics/btcontrolwidget.h
 
 FORMS += \
     corewidget.ui

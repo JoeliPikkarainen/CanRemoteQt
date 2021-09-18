@@ -1,7 +1,7 @@
 #include "corewidget.h"
 #include "ui_corewidget.h"
-#include "bt_com_if.h"
 
+#include "src/bt_com_if.h"
 
 CoreWidget::CoreWidget(QWidget *parent)
     : QWidget(parent)
@@ -21,11 +21,19 @@ CoreWidget::CoreWidget(QWidget *parent)
     connect(m_bt,&BT_COM_IF::log, m_logger, &LogTerminal::append);
 
     connect(m_bt_widget, &BTControlWidget::connectRequested, m_bt, &BT_COM_IF::connectModule);
+    connect(m_bt_widget, &BTControlWidget::disconnectRequested, m_bt, &BT_COM_IF::onDisconnectRequested);
 
+    connect(this,&CoreWidget::term_log, m_logger, &LogTerminal::append);
 }
 
 CoreWidget::~CoreWidget()
 {
     delete ui;
 }
+
+BT_COM_IF* CoreWidget::bt()
+{
+    return m_bt;
+}
+
 

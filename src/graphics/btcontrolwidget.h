@@ -5,6 +5,7 @@
 #include <QWidget>
 
 #include <QPushButton>
+#include <QVBoxLayout>
 
 class BTControlWidget : public QWidget
 {
@@ -17,10 +18,14 @@ public slots:
 
 signals:
     void connectRequested();
+    void disconnectRequested();
 
 private:
+
+    QVBoxLayout* vboxConnections;
     QPushButton* conBtn;
     QPushButton* findBtn;
+    QPushButton* dconBtn;
 
 };
 

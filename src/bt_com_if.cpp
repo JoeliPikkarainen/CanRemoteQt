@@ -2,20 +2,18 @@
 
 #include <corewidget.h>
 
+#include "com_frame.h"
+#include "frameconverter.h"
+
 BT_COM_IF::BT_COM_IF(QObject *parent) : QObject(parent)
 {
 
     m_core = (Ui::CoreWidget*)parent;
-    m_server = new QBluetoothServer(QBluetoothServiceInfo::RfcommProtocol,this);
-    m_local = new QBluetoothLocalDevice(this);
     m_disc = new QBluetoothDeviceDiscoveryAgent(this);
     m_socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
-    m_serv_disc = new QBluetoothServiceDiscoveryAgent(this);
 
     connect(m_disc, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered, this, &BT_COM_IF::onDiscover);
-    connect(m_serv_disc, &QBluetoothServiceDiscoveryAgent::serviceDiscovered, this ,&BT_COM_IF::onServiceDiscovered);
     m_disc->start();
-    m_serv_disc->start();
 
     connect(m_socket, &QBluetoothSocket::connected, this, &BT_COM_IF::onConnect);
 }
@@ -44,6 +42,25 @@ void BT_COM_IF::transmitFrame()
 
 }
 
+void BT_COM_IF::onDisconnectRequested()
+{
+    QString log = QString("disconnecting from: %1 ").arg(m_socket->peerName());
+    lg(log);
+
+
+    try {
+        m_socket->disconnectFromService();
+
+    }  catch (...) {
+
+    }
+
+    log = QString("disconnected");
+    lg(log);
+
+    emit disconnected();
+}
+
 void BT_COM_IF::onDiscover(const QBluetoothDeviceInfo &info)
 {
     QString theName = info.name();
@@ -54,28 +71,25 @@ void BT_COM_IF::onDiscover(const QBluetoothDeviceInfo &info)
     }
 }
 
-void BT_COM_IF::onServiceDiscovered(const QBluetoothServiceInfo &info)
-{
-    QString theName = info.device().name();
-
-    if(discFilter.contains(theName)){
-        m_serv_info = info;
-        emit canModuleFound(QString("can module found: %1").arg(theName));
-        emit moduleAvailable(true);
-    }
-}
 
 void BT_COM_IF::onConnect()
 {
     lg("connected");
     connected = true;
     connect(m_socket,&QBluetoothSocket::readyRead,this,&BT_COM_IF::onReadyRead);
+    m_disc->stop();
 }
 
 void BT_COM_IF::onReadyRead()
 {
-    std::string bf = m_socket->readAll().toStdString();
-    lg(QString::fromStdString(bf));
+    QByteArray ba = m_socket->readAll();
+    std::string bf = ba.toStdString();
+
+    char* bfc = ba.data();
+    int len_buff = ba.length();
+    int len_data = len_buff - COM_FRAME::k_empty_size;
+    uint8_t* bf8 = (uint8_t*)bfc;
+    lg(FrameConverter::frameToHexString(ba));
 }
 
 void BT_COM_IF::lg(QString msg)

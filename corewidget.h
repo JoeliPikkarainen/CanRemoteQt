@@ -5,8 +5,9 @@
 #include <QVBoxLayout>
 
 //Widgets
-#include <logterminal.h>
-#include <btcontrolwidget.h>
+
+#include "src/graphics/logterminal.h"
+#include "src/graphics/btcontrolwidget.h"
 
 class BT_COM_IF;
 QT_BEGIN_NAMESPACE
@@ -20,6 +21,13 @@ class CoreWidget : public QWidget
 public:
     CoreWidget(QWidget *parent = nullptr);
     ~CoreWidget();
+
+    static void slog(QString str);
+
+    BT_COM_IF* bt();
+
+signals:
+    void term_log(QString str);
 
 private:
     Ui::CoreWidget *ui;
