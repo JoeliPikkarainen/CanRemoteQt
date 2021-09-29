@@ -15,15 +15,23 @@ SOURCES += \
     src/bt_com_if.cpp \
     src/frameconverter.cpp \
     src/graphics/btcontrolwidget.cpp \
-    src/graphics/logterminal.cpp
+    src/graphics/framebuilder.cpp \
+    src/graphics/logterminal.cpp \
+    src/graphics/modulecontrolwidget.cpp \
+    src/graphics/qvboxaswidget.cpp \
+    src/moduleapi.cpp
 
 HEADERS += \
     com_frame.h \
     corewidget.h \
     src/bt_com_if.h \
     src/frameconverter.h \
+    src/graphics/framebuilder.h \
     src/graphics/logterminal.h \
-    src/graphics/btcontrolwidget.h
+    src/graphics/btcontrolwidget.h \
+    src/graphics/modulecontrolwidget.h \
+    src/graphics/qvboxaswidget.h \
+    src/moduleapi.h
 
 FORMS += \
     corewidget.ui
@@ -34,3 +42,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 ANDROID_ABIS = armeabi-v7a
+
+ANDROID_BUILD {
+    message("ANDROID_BUILD")
+    DEFINES += ANDROID_BUILD
+}
+
+DESKTOP_BUILD {
+    message("DESKTOP_BUILD")
+    DEFINES += DESKTOP_BUILD
+}

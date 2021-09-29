@@ -8,7 +8,6 @@
 BT_COM_IF::BT_COM_IF(QObject *parent) : QObject(parent)
 {
 
-    m_core = (Ui::CoreWidget*)parent;
     m_disc = new QBluetoothDeviceDiscoveryAgent(this);
     m_socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
 
@@ -37,16 +36,26 @@ void BT_COM_IF::connectModule()
     }
 }
 
-void BT_COM_IF::transmitFrame()
+quint64 BT_COM_IF::transmitFrame(COM_FRAME frame)
 {
+    int len = 0;
+    uint8_t bf[64];
+    frame.toByteArray(bf,len);
 
+
+    QByteArray ba = QByteArray((const char*)bf,len);
+    lg(QString("> %1").arg(FrameConverter::frameToHexString(ba)));
+    return m_socket->write((char*)bf,len);
 }
+
+
 
 void BT_COM_IF::onDisconnectRequested()
 {
     QString log = QString("disconnecting from: %1 ").arg(m_socket->peerName());
     lg(log);
 
+    disconnect(m_socket,&QBluetoothSocket::readyRead,this,&BT_COM_IF::onReadyRead);
 
     try {
         m_socket->disconnectFromService();
@@ -59,6 +68,11 @@ void BT_COM_IF::onDisconnectRequested()
     lg(log);
 
     emit disconnected();
+}
+
+void BT_COM_IF::onToggleStreamRequested()
+{
+
 }
 
 void BT_COM_IF::onDiscover(const QBluetoothDeviceInfo &info)
@@ -82,14 +96,34 @@ void BT_COM_IF::onConnect()
 
 void BT_COM_IF::onReadyRead()
 {
-    QByteArray ba = m_socket->readAll();
+    QByteArray ba;
+    for(int i = 0; i < COM_FRAME::k_header_size -1;i++){
+        char c;
+        int rode = m_socket->read(&c,1);
+        if(rode != 1)
+            return;
+        ba.append(c);
+    }
+    char payloadlength;
+    m_socket->read(&payloadlength,1);
+    ba.append(payloadlength);
+
+    for(int i = 0; i < payloadlength+1;i++){
+        char c;
+        int rode = m_socket->read(&c,1);
+        if(rode != 1)
+            return;
+        ba.append(c);
+    }
     std::string bf = ba.toStdString();
 
-    char* bfc = ba.data();
-    int len_buff = ba.length();
-    int len_data = len_buff - COM_FRAME::k_empty_size;
-    uint8_t* bf8 = (uint8_t*)bfc;
-    lg(FrameConverter::frameToHexString(ba));
+    emit frameReceived(ba);
+    lg(QString("< %1 %2")
+       .arg(FrameConverter::frameToHexString(ba))
+       .arg(FrameConverter::frameToTextualString(ba))
+       );
+
+    onReadyRead();
 }
 
 void BT_COM_IF::lg(QString msg)

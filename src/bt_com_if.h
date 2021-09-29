@@ -4,9 +4,9 @@
 #include <QtBluetooth>
 
 #include <QObject>
-#include <corewidget.h>
 
-class CoreWidget;
+#include "com_frame.h"
+
 class BT_COM_IF : public QObject
 {
     Q_OBJECT
@@ -16,12 +16,11 @@ public:
     QBluetoothDeviceDiscoveryAgent* m_disc;
     QBluetoothSocket* m_socket;
 
-    Ui::CoreWidget* m_core;
-
 public slots:
     void connectModule();
-    void transmitFrame();
+    quint64 transmitFrame(COM_FRAME frame);
     void onDisconnectRequested();
+    void onToggleStreamRequested();
 
 signals:
     void canModuleFound(QString name);
@@ -29,6 +28,7 @@ signals:
     void disconnected();
 
     void log(QString msg);
+    void frameReceived(const QByteArray& frame);
 
 private slots:
     void onDiscover(const QBluetoothDeviceInfo &info);
@@ -41,6 +41,7 @@ private:
     QBluetoothServiceInfo m_serv_info;
     bool connected = false;
     void lg(QString msg);
+
 
 };
 

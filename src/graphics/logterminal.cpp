@@ -4,11 +4,20 @@
 
 LogTerminal::LogTerminal(QWidget *parent) : QLabel(parent)
 {
-    QString ss;
-    ss = "background: black; color: green";
-    this->setStyleSheet(ss);
+    QString ssbg;
+    ssbg = "background: black; color: green";
+
+    QString ssbtn;
+    ssbtn = "background: green; color: black";
+
+    this->setStyleSheet(ssbg);
     info.move(0,0);
     info.setText("info:");
+
+    clearBtn = new QPushButton(this);
+    clearBtn->setText("CLEAR");
+    clearBtn->setStyleSheet(ssbtn);
+    connect(clearBtn,&QPushButton::clicked,this,&LogTerminal::clear);
 }
 
 void LogTerminal::append(QString msg)
@@ -17,6 +26,12 @@ void LogTerminal::append(QString msg)
     if(m_msgs.count()> msg_buff_size){
         m_msgs.removeLast();
     }
+    update();
+}
+
+void LogTerminal::clear()
+{
+    m_msgs.clear();
     update();
 }
 

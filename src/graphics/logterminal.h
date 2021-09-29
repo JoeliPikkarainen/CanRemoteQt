@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include <QLabel>
 #include <QLayoutItem>
+#include <QPushButton>
 
 class LogTerminal : public QLabel
 {
@@ -13,6 +14,7 @@ public:
     explicit LogTerminal(QWidget *parent = nullptr);
 
     void append(QString msg);
+    void clear();
 
 signals:
 
@@ -23,6 +25,7 @@ private:
     const int msg_buff_size = 30;
     QList<QString> m_msgs;
     QLabel info;
+    QPushButton* clearBtn;
 
 };
 

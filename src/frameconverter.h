@@ -2,6 +2,7 @@
 #define FRAMECONVERTER_H
 
 #include <QObject>
+#include <com_frame.h>
 
 class FrameConverter : public QObject
 {
@@ -11,6 +12,7 @@ public:
 
     static QString frameToHexString(uint8_t *frame);
     static QString frameToHexString(const QByteArray& frame);
+    static QString frameToTextualString(const QByteArray& frame);
 
 signals:
 

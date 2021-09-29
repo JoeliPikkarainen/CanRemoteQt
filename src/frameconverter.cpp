@@ -34,3 +34,19 @@ QString FrameConverter::frameToHexString(const QByteArray &frame)
     }
     return retval;
 }
+
+QString FrameConverter::frameToTextualString(const QByteArray &frame)
+{
+    QString retval;
+
+    int strlen = frame.at(4);
+    if((COMMAND_BYTE)frame.at(3) == COMMAND_BYTE::INFO_STRING){
+
+        retval = "INFO:";
+        for(int i = 0; i < strlen; i++){
+            retval.append(frame.at(i+5));
+        }
+    }
+
+    return retval;
+}

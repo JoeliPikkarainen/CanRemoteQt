@@ -3,13 +3,17 @@
 
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QTabWidget>
 
 //Widgets
 
 #include "src/graphics/logterminal.h"
 #include "src/graphics/btcontrolwidget.h"
+#include "src/bt_com_if.h"
+#include "src/graphics/qvboxaswidget.h"
+#include "src/graphics/modulecontrolwidget.h"
+#include "src/moduleapi.h"
 
-class BT_COM_IF;
 QT_BEGIN_NAMESPACE
 namespace Ui { class CoreWidget; }
 QT_END_NAMESPACE
@@ -33,9 +37,13 @@ private:
     Ui::CoreWidget *ui;
 
     BT_COM_IF* m_bt;
-    LogTerminal* m_logger;
-    BTControlWidget* m_bt_widget;
+    ModuleApi* m_api;
 
-    QVBoxLayout* mainVLayout;
+    BTControlWidget* m_bt_widget;
+    LogTerminal* m_logger;
+    ModuleControlWidget* m_ctrl_widget;
+
+    QTabWidget* mainTabs;
+    QVBoxAsWidget* mainVLayout;
 };
 #endif // COREWIDGET_H
